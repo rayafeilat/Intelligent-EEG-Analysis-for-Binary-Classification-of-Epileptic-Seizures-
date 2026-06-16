@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+
+# AWS
+*.pem
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Python Environment
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+*.h5
+*.pt
+*.pkl
+*.zip
+*.csv

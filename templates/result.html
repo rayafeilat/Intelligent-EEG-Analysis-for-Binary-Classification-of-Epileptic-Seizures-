@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GP Seizure Detection System</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    overflow:hidden;
+    color:white;
+}
+
+/* BACKGROUND VIDEO (less dark than before) */
+video{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:-3;
+    filter:brightness(0.35);
+}
+
+/* lighter overlay */
+.overlay{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle at center, rgba(0,229,255,0.06), rgba(0,0,0,0.55));
+    z-index:-2;
+}
+
+/* MAIN */
+.main-container{
+    position:relative;
+    z-index:10;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.system-header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.system-header h1{
+    color:#00f7ff;
+    font-size:42px;
+    text-shadow:0 0 15px #00f7ff;
+}
+
+.system-header p{
+    opacity:0.8;
+}
+
+/* DASHBOARD */
+.dashboard{
+    display:flex;
+    gap:40px;
+    width:92%;
+    max-width:1400px;
+}
+
+/* GLASS CARDS */
+.glass-card{
+    background:rgba(10,15,30,0.65);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(0,247,255,0.2);
+    border-radius:25px;
+    box-shadow:0 0 30px rgba(0,247,255,0.12);
+}
+
+/* LEFT PANEL (smaller now) */
+.input-panel{
+    width:32%;
+    padding:35px;
+}
+
+.input-panel h2{
+    color:#00f7ff;
+    margin-bottom:20px;
+}
+
+/* RIGHT PANEL (bigger now) */
+.result-panel{
+    width:68%;
+    padding:35px;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:8px;
+    color:#b7d4e6;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:rgba(255,255,255,0.08);
+    color:white;
+    outline:none;
+}
+
+.analyze-btn{
+    width:100%;
+    margin-top:25px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#00f7ff;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.analyze-btn:hover{
+    transform:scale(1.02);
+}
+
+/* RESULT BOX */
+.result-panel h2{
+    color:#00f7ff;
+    margin-bottom:20px;
+}
+
+.alert-box{
+    text-align:center;
+    padding:30px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    transition:0.4s;
+}
+
+.alert-icon{
+    font-size:60px;
+    animation:pulse 2s infinite;
+}
+
+.alert-box h3{
+    font-size:30px;
+    margin:15px 0;
+}
+
+.recommendation-box{
+    margin-top:25px;
+    padding:20px;
+    border-radius:15px;
+    background:rgba(255,255,255,0.05);
+}
+
+.recommendation-box ul{
+    padding-left:20px;
+    line-height:2;
+}
+
+.grafana-btn{
+    margin-top:25px;
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #00f7ff;
+    background:transparent;
+    color:#00f7ff;
+    cursor:pointer;
+}
+
+.grafana-btn:hover{
+    background:#00f7ff;
+    color:black;
+}
+
+/* STATES */
+.normal{
+    border:1px solid rgba(46,204,113,0.6);
+    box-shadow:0 0 25px rgba(46,204,113,0.2);
+}
+
+.abnormal{
+    border:1px solid rgba(255,77,77,0.6);
+    box-shadow:0 0 25px rgba(255,77,77,0.25);
+}
+
+/* PULSE */
+@keyframes pulse{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.1);}
+    100%{transform:scale(1);}
+}
+
+</style>
+</head>
+
+<body>
+
+<video autoplay muted loop>
+    <source src="/static/images/background.mp4" type="video/mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="main-container">
+
+    <div class="system-header">
+        <h1>GP Seizure Detection System</h1>
+        <p>CNN EEG Analysis Platform</p>
+    </div>
+
+    <div class="dashboard">
+
+        <!-- INPUT -->
+        <div class="glass-card input-panel">
+            <h2>Patient Information</h2>
+
+            <label>Name</label>
+            <input type="text" id="patientName" placeholder="Enter patient name">
+            
+            <label>Phone</label>
+            <input type="tel" id="patientPhone" placeholder="+962 XX XXX XXXX">
+            <label>EEG File (.npz)</label>
+            <input type="file" accept=".npz" id="fileInput">
+
+            <button class="analyze-btn" onclick="analyzeEEG()">
+                Analyze EEG
+            </button>
+        </div>
+
+        <!-- RESULT -->
+        <div class="glass-card result-panel">
+
+            <h2>Analysis Results</h2>
+
+            <div id="alertBox" class="alert-box">
+
+                <div class="alert-icon" id="icon">🧠</div>
+
+                <h3 id="status">Waiting For Analysis</h3>
+
+                <p id="desc">
+                    Upload EEG file to begin analysis.
+                </p>
+
+            </div>
+
+            <div class="recommendation-box">
+                <h3>Clinical Recommendation</h3>
+                <ul id="rec">
+                    <li>Await EEG processing</li>
+                    <li>Verify file format</li>
+                    <li>Prepare monitoring</li>
+                </ul>
+            </div>
+
+            <button class="grafana-btn" onclick="openGrafana()">
+                Open Grafana Dashboard →
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function analyzeEEG(){
+
+    const file = document.getElementById("fileInput").files[0];
+
+    if(!file){
+        alert("Please upload an EEG file first.");
+        return;
+    }
+
+    const isNormal = Math.random() > 0.5; // simulate model output
+
+    const box = document.getElementById("alertBox");
+    const status = document.getElementById("status");
+    const desc = document.getElementById("desc");
+    const rec = document.getElementById("rec");
+    const icon = document.getElementById("icon");
+
+    if(isNormal){
+
+        box.classList.remove("abnormal");
+        box.classList.add("normal");
+
+        icon.innerText = "🟢";
+        status.innerText = "NO EPILEPTIC ACTIVITY DETECTED";
+        desc.innerText = "EEG signal is within normal neurological patterns.";
+
+        rec.innerHTML = `
+            <li>No seizure indicators found</li>
+            <li>Continue routine monitoring</li>
+            <li>No immediate medical action required</li>
+        `;
+
+    } else {
+
+        box.classList.remove("normal");
+        box.classList.add("abnormal");
+
+        icon.innerText = "🔴";
+        status.innerText = "SEIZURE RISK DETECTED";
+        desc.innerText = "Abnormal EEG patterns detected indicating potential seizure activity.";
+
+        rec.innerHTML = `
+            <li>Immediate patient observation required</li>
+            <li>Alert medical staff</li>
+            <li>Prepare emergency protocol</li>
+            <li>Continuous monitoring recommended</li>
+        `;
+    }
+}
+
+function openGrafana(){
+    window.location.href = "#";
+}
+/*backend starts here*/
+
+async function predict() {
+
+    const fileInput = document.getElementById("fileInput");
+    const name = document.getElementById("patientName").value;
+    const phone = document.getElementById("patientPhone").value;
+
+    const file = fileInput.files[0];
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+    formData.append("phone", phone);
+
+
+    const response = await fetch(
+        "http://13.63.245.215:5000/predict",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const result = await response.json();
+    console.log(result);
+
+    // show summary
+    document.getElementById("status").innerText =
+        result.summary;
+
+    // show last window result (optional)
+    if (result.windows && result.windows.length > 0) {
+        const lastWindow = result.windows[result.windows.length - 1];
+
+        document.getElementById("status").innerText +=
+            ` | Last: ${lastWindow.prediction}`;
+    }
+}
+</script>
+
+</body>
+</html>

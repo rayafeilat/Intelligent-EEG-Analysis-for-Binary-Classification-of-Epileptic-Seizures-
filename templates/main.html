@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GP Project</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at center, #0a0f1f, #02040a);
+        color: white;
+        text-align: center;
+        overflow-x: hidden;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 2.7rem;
+        letter-spacing: 2px;
+        color: #00f7ff;
+        text-shadow: 0 0 15px #00f7ff;
+    }
+
+    .team {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin: 40px 0;
+        flex-wrap: wrap;
+    }
+
+   .member {
+    text-align: center;
+    position: relative;
+}
+
+    .member img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 2px solid #00f7ff;
+    box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    z-index: 2;
+}
+
+    .member:hover img {
+    transform: scale(1.12);
+    box-shadow: 0 0 25px #00f7ff, 0 0 50px rgba(0,247,255,0.6);
+}
+
+    .member::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,247,255,0.4), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
+}
+
+/* Pulsing ring */
+.member::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,247,255,0.6);
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+    z-index: 1;
+}
+.member:hover::before {
+    opacity: 1;
+}
+.member:hover::after {
+    animation: pulse 1.5s infinite;
+    opacity: 1;
+}
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+    .member p {
+        margin-top: 10px;
+        font-size: 1.1rem;
+    }
+
+    .project-title {
+        margin: 50px 20px;
+        font-size: 1.7rem;
+        color: #a0c4ff;
+    }
+
+    .project-title span {
+        color: #00f7ff;
+        font-weight: bold;
+    }
+
+    button {
+        margin: 40px;
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        background: transparent;
+        border: 2px solid #00f7ff;
+        color: #00f7ff;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    button:hover {
+        background: #00f7ff;
+        color: black;
+        box-shadow: 0 0 20px #00f7ff;
+    }
+
+    /* Neural network background dots */
+    .dot {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #00f7ff;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: float 6s infinite alternate;
+    }
+
+    @keyframes float {
+        from { transform: translateY(0px); }
+        to { transform: translateY(-20px); }
+    }
+
+</style>
+</head>
+
+<body>
+
+<h1>Jacks of All Trades are master of Fun , Meet them:</h1>
+
+<div class="team">
+    <div class="member">
+        <img src="/static/images/member1.jpeg" alt="Member 1">
+        <p>Tala Saadeh</p>
+    </div>
+
+    <div class="member">
+        <img src="/static/images/member2.jpeg" alt="Member 2">
+        <p>Sara Makahleh</p>
+    </div>
+
+    <div class="member">
+        <img src="/static/images/member3.jpeg" alt="Member 3">
+        <p>Raya Abul-Feilat</p>
+    </div>
+</div>
+
+<div class="project-title">
+    <span>Graduation Project:</span><br>
+    Intelligent EEG Analysis 
+   <br> For Binary classification of Epileptic Seizures<br>
+    
+</div>
+
+<button onclick="goToRun()">Run System</button>
+
+<script>
+    function goToRun() {
+        window.location.href = "result.html";
+    }
+
+    // Generate floating neural dots
+    for (let i = 0; i < 40; i++) {
+        let dot = document.createElement("div");
+        dot.classList.add("dot");
+        dot.style.top = Math.random() * window.innerHeight + "px";
+        dot.style.left = Math.random() * window.innerWidth + "px";
+        document.body.appendChild(dot);
+    }
+</script>
+
+</body>
+</html>
