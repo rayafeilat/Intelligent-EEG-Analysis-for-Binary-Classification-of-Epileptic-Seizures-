@@ -60,3 +60,7 @@ Raw EEG Data → Preprocessing → Deep Learning Model → Flask API → Postgre
 📌 Objective
 
 To build a scalable, cloud-deployable seizure detection system that bridges biomedical signal processing and real-world MLOps deployment, demonstrating an end-to-end machine learning engineering workflow.
+
+
+promo video for the project :
+https://drive.google.com/file/d/1RpqPOkkKj3GI3ETObzeyReVLp372w90W/view?usp=drivesdk
