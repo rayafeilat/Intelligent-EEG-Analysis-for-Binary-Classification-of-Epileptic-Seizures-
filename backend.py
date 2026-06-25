@@ -15,7 +15,7 @@ def get_db():
     return psycopg2.connect(
         dbname="eeg_db",
         user="eeg_user",
-        password="NewStrongPassword123",
+        
         host="localhost"
     )
 
